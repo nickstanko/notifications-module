@@ -1,11 +1,12 @@
 <?php namespace Anomaly\NotificationsModule\Subscription\Listener;
 
-use Anomaly\Streams\Platform\Notification\Event\NotificationHasBeenDispatched;
+use Anomaly\Streams\Platform\Notification\Event\Transmission;
+use Anomaly\UsersModule\User\Contract\UserRepositoryInterface;
 
 class TransmitNotification
 {
-    public function handle(NotificationHasBeenDispatched $event)
+    public function handle(Transmission $event)
     {
-        dd($event->getNotification());
+        app(UserRepositoryInterface::class)->first()->notify($event->getNotification());
     }
 }

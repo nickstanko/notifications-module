@@ -10,7 +10,7 @@ class NotificationsModuleServiceProvider extends AddonServiceProvider
      * @var array
      */
     protected $listeners = [
-        'Anomaly\Streams\Platform\Notification\Event\NotificationHasBeenDispatched' => [
+        'Anomaly\Streams\Platform\Notification\Event\Transmission' => [
             'Anomaly\NotificationsModule\Subscription\Listener\TransmitNotification',
         ],
     ];
