@@ -1,0 +1,8 @@
+<?php namespace Anomaly\NotificationsModule\Subscription;
+
+use Anomaly\Streams\Platform\Entry\EntryObserver;
+
+class SubscriptionObserver extends EntryObserver
+{
+
+}

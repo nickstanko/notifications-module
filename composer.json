@@ -1,0 +1,9 @@
+{
+    "name": "anomaly/notifications-module",
+    "type": "streams-addon",
+    "autoload": {
+        "psr-4": {
+            "Anomaly\\NotificationsModule\\": "src/"
+        }
+    }
+}
