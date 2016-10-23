@@ -2,6 +2,13 @@
 
 use Anomaly\Streams\Platform\Database\Migration\Migration;
 
+/**
+ * Class AnomalyModuleNotificationsCreateNotificationsFields
+ *
+ * @link   http://pyrocms.com/
+ * @author PyroCMS, Inc. <support@pyrocms.com>
+ * @author Ryan Thompson <ryan@pyrocms.com>
+ */
 class AnomalyModuleNotificationsCreateNotificationsFields extends Migration
 {
 
@@ -10,5 +17,21 @@ class AnomalyModuleNotificationsCreateNotificationsFields extends Migration
      *
      * @var array
      */
-    protected $fields = [];
+    protected $fields = [
+        'event'        => 'anomaly.field_type.text',
+        'channel'      => [
+            'type'   => 'anomaly.field_type.addon',
+            'config' => [
+                'type'   => 'extension',
+                'search' => 'anomaly.module.notifications::channel.*',
+            ],
+        ],
+        'notification' => [
+            'type'   => 'anomaly.field_type.addon',
+            'config' => [
+                'type'   => 'extension',
+                'search' => 'anomaly.module.notifications::notification.*',
+            ],
+        ],
+    ];
 }

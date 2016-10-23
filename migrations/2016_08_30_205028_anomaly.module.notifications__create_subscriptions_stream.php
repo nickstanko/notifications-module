@@ -2,6 +2,13 @@
 
 use Anomaly\Streams\Platform\Database\Migration\Migration;
 
+/**
+ * Class AnomalyModuleNotificationsCreateSubscriptionsStream
+ *
+ * @link   http://pyrocms.com/
+ * @author PyroCMS, Inc. <support@pyrocms.com>
+ * @author Ryan Thompson <ryan@pyrocms.com>
+ */
 class AnomalyModuleNotificationsCreateSubscriptionsStream extends Migration
 {
 
@@ -11,7 +18,7 @@ class AnomalyModuleNotificationsCreateSubscriptionsStream extends Migration
      * @var array
      */
     protected $stream = [
-        'slug' => 'subscriptions'
+        'slug' => 'subscriptions',
     ];
 
     /**
@@ -19,6 +26,16 @@ class AnomalyModuleNotificationsCreateSubscriptionsStream extends Migration
      *
      * @var array
      */
-    protected $assignments = [];
+    protected $assignments = [
+        'event'        => [
+            'required' => true,
+        ],
+        'channel'      => [
+            'required' => true,
+        ],
+        'notification' => [
+            'required' => true,
+        ],
+    ];
 
 }
