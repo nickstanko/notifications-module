@@ -13,11 +13,11 @@ abstract class NotificationExtension extends Extension
 {
 
     /**
-     * The event name.
+     * The notification event.
      *
      * @var null|string
      */
-    public static $event = null;
+    public $event = null;
 
     /**
      * Return a new notification.

@@ -1,9 +1,21 @@
 <?php namespace Anomaly\NotificationsModule\Http\Controller\Admin;
 
+use Anomaly\ConfigurationModule\Configuration\Form\ConfigurationFormBuilder;
+use Anomaly\NotificationsModule\Notification\Form\NotificationFormBuilder;
+use Anomaly\NotificationsModule\Notification\NotificationExtension;
+use Anomaly\NotificationsModule\Subscription\Contract\SubscriptionRepositoryInterface;
 use Anomaly\NotificationsModule\Subscription\Form\SubscriptionFormBuilder;
 use Anomaly\NotificationsModule\Subscription\Table\SubscriptionTableBuilder;
+use Anomaly\Streams\Platform\Addon\Extension\ExtensionCollection;
 use Anomaly\Streams\Platform\Http\Controller\AdminController;
 
+/**
+ * Class SubscriptionsController
+ *
+ * @link   http://pyrocms.com/
+ * @author PyroCMS, Inc. <support@pyrocms.com>
+ * @author Ryan Thompson <ryan@pyrocms.com>
+ */
 class SubscriptionsController extends AdminController
 {
 
@@ -19,13 +31,109 @@ class SubscriptionsController extends AdminController
     }
 
     /**
+     * Return a selection of notifications.
+     *
+     * @param ExtensionCollection $extensions
+     * @return \Illuminate\Contracts\View\View|mixed
+     */
+    public function notification(ExtensionCollection $extensions)
+    {
+        $notifications = $extensions->search('anomaly.module.notifications::notification.*');
+
+        return $this->view->make(
+            'anomaly.module.notifications::admin/subscriptions/notification',
+            [
+                'notifications' => $notifications->enabled(),
+            ]
+        );
+    }
+
+    /**
+     * Return a selection of channels.
+     *
+     * @param ExtensionCollection $extensions
+     * @return \Illuminate\Contracts\View\View|mixed
+     */
+    public function channel(ExtensionCollection $extensions)
+    {
+        $channels = $extensions->search('anomaly.module.notifications::channel.*');
+
+        return $this->view->make(
+            'anomaly.module.notifications::admin/subscriptions/channel',
+            [
+                'channels' => $channels->enabled(),
+            ]
+        );
+    }
+
+    /**
      * Create a new entry.
      *
-     * @param SubscriptionFormBuilder $form
+     * @param NotificationFormBuilder $form
+     * @param SubscriptionFormBuilder $subscription
+     * @param ExtensionCollection     $extensions
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function create(SubscriptionFormBuilder $form)
-    {
+    public function create(
+        NotificationFormBuilder $form,
+        SubscriptionFormBuilder $subscription,
+        ExtensionCollection $extensions
+    ) {
+        $channel      = app(ConfigurationFormBuilder::class);
+        $notification = app(ConfigurationFormBuilder::class);
+
+        /* @var NotificationExtension $extension */
+        $extension = $extensions->get($this->request->get('notification'));
+
+        $channel
+            ->setEntry($this->request->get('channel'))
+            ->on(
+                'saving',
+                \Closure::bind(
+                    function () use ($subscription) {
+
+                        /* @var ConfigurationFormBuilder $this */
+                        $this->setScope($subscription->getFormEntryId());
+                    },
+                    $channel
+                )
+            );
+
+        $notification
+            ->setEntry($this->request->get('notification'))
+            ->on(
+                'saving',
+                \Closure::bind(
+                    function () use ($subscription) {
+
+                        /* @var ConfigurationFormBuilder $this */
+                        $this->setScope($subscription->getFormEntryId());
+                    },
+                    $notification
+                )
+            );
+
+        $subscription->on(
+            'saving',
+            \Closure::bind(
+                function () use ($extension) {
+
+                    /* @var SubscriptionFormBuilder $this */
+                    $entry = $this->getFormEntry();
+
+                    $entry->setAttribute('event', $extension->event);
+
+                    $entry->setAttribute('channel', $_GET['channel']);
+                    $entry->setAttribute('notification', $_GET['notification']);
+                },
+                $subscription
+            )
+        );
+
+        $form->addForm('subscription', $subscription);
+        $form->addForm('channel', $channel);
+        $form->addForm('notification', $notification);
+
         return $form->render();
     }
 
@@ -33,11 +141,31 @@ class SubscriptionsController extends AdminController
      * Edit an existing entry.
      *
      * @param SubscriptionFormBuilder $form
-     * @param        $id
+     * @param                         $id
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function edit(SubscriptionFormBuilder $form, $id)
-    {
-        return $form->render($id);
+    public function edit(
+        NotificationFormBuilder $form,
+        SubscriptionFormBuilder $subscription,
+        SubscriptionRepositoryInterface $subscriptions
+    ) {
+        $channel      = app(ConfigurationFormBuilder::class);
+        $notification = app(ConfigurationFormBuilder::class);
+
+        $entry = $subscriptions->find($this->route->getParameter('id'));
+
+        $channel
+            ->setEntry($entry->channel->getNamespace())
+            ->setScope($entry->getId());
+
+        $notification
+            ->setEntry($entry->notification->getNamespace())
+            ->setScope($entry->getId());
+
+        $form->addForm('subscription', $subscription);
+        $form->addForm('channel', $channel);
+        $form->addForm('notification', $notification);
+
+        return $form->render();
     }
 }

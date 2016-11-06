@@ -27,7 +27,7 @@ class RegisterListeners
 
         /* @var NotificationExtension $notification */
         foreach ($notifications->enabled() as $notification) {
-            $events->listen($notification::$event, SendNotifications::class);
+            $events->listen($notification->event, SendNotifications::class);
         }
     }
 }

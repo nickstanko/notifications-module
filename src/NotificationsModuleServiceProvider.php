@@ -9,7 +9,6 @@ use Anomaly\NotificationsModule\Subscription\SubscriptionModel;
 use Anomaly\NotificationsModule\Subscription\SubscriptionRepository;
 use Anomaly\Streams\Platform\Addon\AddonServiceProvider;
 use Anomaly\Streams\Platform\Model\Notifications\NotificationsSubscriptionsEntryModel;
-use Illuminate\Notifications\DatabaseNotification;
 
 /**
  * Class NotificationsModuleServiceProvider
@@ -22,12 +21,24 @@ class NotificationsModuleServiceProvider extends AddonServiceProvider
 {
 
     /**
+     * The addon routes.
+     *
+     * @var array
+     */
+    protected $routes = [
+        'admin/notifications'              => 'Anomaly\NotificationsModule\Http\Controller\Admin\SubscriptionsController@index',
+        'admin/notifications/notification' => 'Anomaly\NotificationsModule\Http\Controller\Admin\SubscriptionsController@notification',
+        'admin/notifications/channel'      => 'Anomaly\NotificationsModule\Http\Controller\Admin\SubscriptionsController@channel',
+        'admin/notifications/create'       => 'Anomaly\NotificationsModule\Http\Controller\Admin\SubscriptionsController@create',
+        'admin/notifications/edit/{id}'    => 'Anomaly\NotificationsModule\Http\Controller\Admin\SubscriptionsController@edit',
+    ];
+
+    /**
      * The singleton bindings.
      *
      * @var array
      */
     protected $singletons = [
-        NotificationRepositoryInterface::class => NotificationRepository::class,
         SubscriptionRepositoryInterface::class => SubscriptionRepository::class,
     ];
 
@@ -37,7 +48,6 @@ class NotificationsModuleServiceProvider extends AddonServiceProvider
      * @var array
      */
     protected $bindings = [
-        DatabaseNotification::class                 => NotificationModel::class,
         NotificationsSubscriptionsEntryModel::class => SubscriptionModel::class,
     ];
 

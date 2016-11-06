@@ -1,0 +1,27 @@
+<div class="modal-header">
+    <button class="close" data-dismiss="modal">
+        <span>&times;</span>
+    </button>
+    <h4 class="modal-title">
+        {{ trans('anomaly.module.notifications::message.choose_channel') }}
+    </h4>
+</div>
+
+<div class="modal-body">
+    {% if not channels.isEmpty() %}
+        <ul class="nav nav-pills nav-stacked">
+            {% for channel in channels %}
+                <li class="nav-item">
+                    <a href="{{ url_to('admin/notifications/create?notification=' ~ request_get('notification') ~ '&channel=' ~ channel.namespace) }}"
+                       class="nav-link">
+                        <strong>{{ trans(channel.object.title) }}</strong>
+                        <br>
+                        <small>{{ trans(channel.object.description) }}</small>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        {{ trans('streams::message.no_results') }}
+    {% endif %}
+</div>
