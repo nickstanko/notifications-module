@@ -5,6 +5,7 @@ use Anomaly\NotificationsModule\Channel\ChannelCollection;
 use Anomaly\NotificationsModule\Channel\ChannelExtension;
 use Anomaly\NotificationsModule\Notification\Form\NotificationFormBuilder;
 use Anomaly\NotificationsModule\Notification\NotificationExtension;
+use Anomaly\NotificationsModule\Subscription\Contract\SubscriptionInterface;
 use Anomaly\NotificationsModule\Subscription\Contract\SubscriptionRepositoryInterface;
 use Anomaly\NotificationsModule\Subscription\Form\SubscriptionFormBuilder;
 use Anomaly\NotificationsModule\Subscription\Table\SubscriptionTableBuilder;
@@ -96,9 +97,6 @@ class SubscriptionsController extends AdminController
         $channel      = app(ConfigurationFormBuilder::class);
         $notification = app(ConfigurationFormBuilder::class);
 
-        /* @var NotificationExtension $extension */
-        $extension = $extensions->get($this->request->get('notification'));
-
         $channel
             ->setEntry($this->request->get('channel'))
             ->on(
@@ -127,24 +125,11 @@ class SubscriptionsController extends AdminController
                 )
             );
 
-        $subscription->on(
-            'saving',
-            \Closure::bind(
-                function () use ($extension) {
-
-                    /* @var SubscriptionFormBuilder $this */
-                    $entry = $this->getFormEntry();
-
-                    $entry->setAttribute('event', $extension->event);
-
-                    $entry->setAttribute('channel', $_GET['channel']);
-                    $entry->setAttribute('notification', $_GET['notification']);
-                },
-                $subscription
-            )
-        );
+        $subscription->setChannel($extensions->get($this->request->get('channel')));
+        $subscription->setNotification($extensions->get($this->request->get('notification')));
 
         $form->addForm('subscription', $subscription);
+
         $form->addForm('channel', $channel);
         $form->addForm('notification', $notification);
 
@@ -168,19 +153,20 @@ class SubscriptionsController extends AdminController
 
         $subscription->setEntry($this->route->getParameter('id'));
 
+        /* @var SubscriptionInterface $entry */
         $entry = $subscriptions->find($this->route->getParameter('id'));
 
         $channel
-            ->setEntry($entry->channel->getNamespace())
+            ->setEntry($entry->getChannel()->getNamespace())
             ->setScope($entry->getId());
 
         $notification
-            ->setEntry($entry->notification->getNamespace())
+            ->setEntry($entry->getNotification()->getNamespace())
             ->setScope($entry->getId());
 
-        $form->addForm('subscription', $subscription);
         $form->addForm('channel', $channel);
         $form->addForm('notification', $notification);
+        $form->addForm('subscription', $subscription);
 
         return $form->render();
     }
