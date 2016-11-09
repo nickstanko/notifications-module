@@ -1,9 +1,6 @@
 <?php namespace Anomaly\NotificationsModule;
 
 use Anomaly\NotificationsModule\Notification\Command\RegisterListeners;
-use Anomaly\NotificationsModule\Notification\Contract\NotificationRepositoryInterface;
-use Anomaly\NotificationsModule\Notification\NotificationModel;
-use Anomaly\NotificationsModule\Notification\NotificationRepository;
 use Anomaly\NotificationsModule\Subscription\Contract\SubscriptionRepositoryInterface;
 use Anomaly\NotificationsModule\Subscription\SubscriptionModel;
 use Anomaly\NotificationsModule\Subscription\SubscriptionRepository;
@@ -26,11 +23,12 @@ class NotificationsModuleServiceProvider extends AddonServiceProvider
      * @var array
      */
     protected $routes = [
-        'admin/notifications'              => 'Anomaly\NotificationsModule\Http\Controller\Admin\SubscriptionsController@index',
-        'admin/notifications/notification' => 'Anomaly\NotificationsModule\Http\Controller\Admin\SubscriptionsController@notification',
-        'admin/notifications/channel'      => 'Anomaly\NotificationsModule\Http\Controller\Admin\SubscriptionsController@channel',
-        'admin/notifications/create'       => 'Anomaly\NotificationsModule\Http\Controller\Admin\SubscriptionsController@create',
-        'admin/notifications/edit/{id}'    => 'Anomaly\NotificationsModule\Http\Controller\Admin\SubscriptionsController@edit',
+        'admin/notifications'                            => 'Anomaly\NotificationsModule\Http\Controller\Admin\NotificationsController@index',
+        'admin/notifications/subscriptions'              => 'Anomaly\NotificationsModule\Http\Controller\Admin\SubscriptionsController@index',
+        'admin/notifications/subscriptions/notification' => 'Anomaly\NotificationsModule\Http\Controller\Admin\SubscriptionsController@notification',
+        'admin/notifications/subscriptions/channel'      => 'Anomaly\NotificationsModule\Http\Controller\Admin\SubscriptionsController@channel',
+        'admin/notifications/subscriptions/create'       => 'Anomaly\NotificationsModule\Http\Controller\Admin\SubscriptionsController@create',
+        'admin/notifications/subscriptions/edit/{id}'    => 'Anomaly\NotificationsModule\Http\Controller\Admin\SubscriptionsController@edit',
     ];
 
     /**

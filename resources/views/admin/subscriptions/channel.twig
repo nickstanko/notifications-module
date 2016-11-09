@@ -12,7 +12,7 @@
         <ul class="nav nav-pills nav-stacked">
             {% for channel in channels %}
                 <li class="nav-item">
-                    <a href="{{ url_to('admin/notifications/create?notification=' ~ request_get('notification') ~ '&channel=' ~ channel.namespace) }}"
+                    <a href="{{ url_to('admin/notifications/subscriptions/create?notification=' ~ request_get('notification') ~ '&channel=' ~ channel.namespace) }}"
                        class="nav-link">
                         <strong>{{ trans(channel.object.title) }}</strong>
                         <br>

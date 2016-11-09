@@ -1,10 +1,10 @@
 <?php namespace Anomaly\NotificationsModule\Subscription;
 
+use Anomaly\NotificationsModule\Channel\ChannelExtension;
 use Anomaly\NotificationsModule\Notification\NotificationExtension;
 use Anomaly\NotificationsModule\Subscription\Contract\SubscriptionInterface;
 use Anomaly\Streams\Platform\Model\Notifications\NotificationsSubscriptionsEntryModel;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Str;
 
 /**
  * Class SubscriptionModel
@@ -19,15 +19,80 @@ class SubscriptionModel extends NotificationsSubscriptionsEntryModel implements 
     use Notifiable;
 
     /**
+     * The event instance.
+     *
+     * @var \stdClass
+     */
+    protected $event = null;
+
+    /**
      * Send the notifications.
      *
      * @param $event
      */
     public function send($event)
     {
+        $this
+            ->setEvent($event)
+            ->notify(
+                $this
+                    ->notification()
+                    ->newNotification($event)
+            );
+    }
+
+    /**
+     * Return the sending methods.
+     *
+     * @return array
+     */
+    public function via()
+    {
+        return $this->channel()->via();
+    }
+
+    /**
+     * Format the notification.
+     *
+     * @return mixed
+     */
+    public function format($notification)
+    {
+        return $this->channel()->format($notification);
+    }
+
+    /**
+     * Return the channel.
+     *
+     * @return ChannelExtension
+     */
+    public function channel()
+    {
+        $channel = $this->getChannel();
+
+        return $channel->setSubscription($this);
+    }
+
+    /**
+     * Return the notification.
+     *
+     * @return NotificationExtension
+     */
+    public function notification()
+    {
         $notification = $this->getNotification();
 
-        $this->notify($notification->newNotification($event));
+        return $notification->setSubscription($this);
+    }
+
+    /**
+     * Get the channel.
+     *
+     * @return ChannelExtension
+     */
+    public function getChannel()
+    {
+        return $this->channel;
     }
 
     /**
@@ -41,29 +106,39 @@ class SubscriptionModel extends NotificationsSubscriptionsEntryModel implements 
     }
 
     /**
-     * Get the notification routing information for the given driver.
+     * Get the event.
+     *
+     * @return object
+     */
+    public function getEvent()
+    {
+        return $this->event;
+    }
+
+    /**
+     * Set the event.
+     *
+     * @param object $event
+     * @return $this
+     */
+    public function setEvent($event)
+    {
+        $this->event = $event;
+
+        return $this;
+    }
+
+    /**
+     * Delegate notification routing information
+     * to the channel that the subscription uses.
      *
      * @param  string $driver
      * @return mixed
      */
     public function routeNotificationFor($driver)
     {
-        if (method_exists($this, $method = 'routeNotificationFor' . Str::studly($driver))) {
-            return $this->{$method}();
-        }
-
-        switch ($driver) {
-            case 'database':
-                return $this->notifications();
-            case 'mail':
-                return $this->email;
-            case 'nexmo':
-                return $this->phone_number;
-        }
-    }
-
-    public function routeNotificationForMail()
-    {
-        return 'ryan@pyrocms.com';
+        return $this
+            ->channel()
+            ->route();
     }
 }

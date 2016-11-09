@@ -2,9 +2,11 @@
 
 return [
     'notifications' => [
-        'title' => 'Notifications',
+        'title'       => 'Notifications',
+        'description' => 'Manage and view system notifications.',
     ],
     'subscriptions' => [
-        'title' => 'Subscriptions',
+        'title'       => 'Subscriptions',
+        'description' => 'Manage the notifications you get and how you get them.',
     ],
 ];

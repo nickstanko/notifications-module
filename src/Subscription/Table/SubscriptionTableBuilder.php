@@ -28,7 +28,16 @@ class SubscriptionTableBuilder extends TableBuilder
      * @var array|string
      */
     protected $columns = [
-        'entry.notification.title',
+        'notification' => [
+            'wrapper' => '
+                <strong>{value.title}</strong><br>
+                <span class="text-muted">{value.description}</span>
+                ',
+            'value'   => [
+                'title'       => 'entry.notification.title',
+                'description' => 'entry.notification.description',
+            ],
+        ],
         'entry.channel.title',
     ];
 

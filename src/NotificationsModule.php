@@ -18,12 +18,13 @@ class NotificationsModule extends Module
      * @var array
      */
     protected $sections = [
+        'notifications',
         'subscriptions' => [
             'buttons' => [
                 'new_subscription' => [
                     'data-toggle' => 'modal',
                     'data-target' => '#modal',
-                    'href'        => 'admin/notifications/notification',
+                    'href'        => 'admin/notifications/subscriptions/notification',
                 ],
             ],
         ],
