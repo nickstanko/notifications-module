@@ -19,13 +19,6 @@ class SubscriptionModel extends NotificationsSubscriptionsEntryModel implements 
     use Notifiable;
 
     /**
-     * The event instance.
-     *
-     * @var \stdClass
-     */
-    protected $event = null;
-
-    /**
      * Send the notifications.
      *
      * @param $event
@@ -33,7 +26,6 @@ class SubscriptionModel extends NotificationsSubscriptionsEntryModel implements 
     public function send($event)
     {
         $this
-            ->setEvent($event)
             ->notify(
                 $this
                     ->notification()
@@ -103,29 +95,6 @@ class SubscriptionModel extends NotificationsSubscriptionsEntryModel implements 
     public function getNotification()
     {
         return $this->notification;
-    }
-
-    /**
-     * Get the event.
-     *
-     * @return object
-     */
-    public function getEvent()
-    {
-        return $this->event;
-    }
-
-    /**
-     * Set the event.
-     *
-     * @param object $event
-     * @return $this
-     */
-    public function setEvent($event)
-    {
-        $this->event = $event;
-
-        return $this;
     }
 
     /**
