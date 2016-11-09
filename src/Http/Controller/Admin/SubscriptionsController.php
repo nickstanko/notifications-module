@@ -2,6 +2,7 @@
 
 use Anomaly\ConfigurationModule\Configuration\Form\ConfigurationFormBuilder;
 use Anomaly\NotificationsModule\Channel\ChannelCollection;
+use Anomaly\NotificationsModule\Channel\ChannelExtension;
 use Anomaly\NotificationsModule\Notification\Form\NotificationFormBuilder;
 use Anomaly\NotificationsModule\Notification\NotificationExtension;
 use Anomaly\NotificationsModule\Subscription\Contract\SubscriptionRepositoryInterface;
@@ -57,18 +58,24 @@ class SubscriptionsController extends AdminController
      */
     public function channel(ExtensionCollection $extensions)
     {
-        $channels = (new ChannelCollection())->make($extensions->all());
-
-        /* @var ChannelCollection $channels */
-        $channels     = $channels->search('anomaly.module.notifications::channel.*');
+        /* @var NotificationExtension $notification */
+        $channels     = $extensions->search('anomaly.module.notifications::channel.*');
         $notification = $extensions->get($this->request->get('notification'));
+
+        $drivers = $notification->getSupported();
 
         return $this->view->make(
             'anomaly.module.notifications::admin/subscriptions/channel',
             [
                 'channels' => $channels
                     ->enabled()
-                    ->supports($notification),
+                    ->filter(
+                        function ($channel) use ($drivers) {
+
+                            /* @var ChannelExtension $channel */
+                            return in_array($channel->via(), $drivers);
+                        }
+                    ),
             ]
         );
     }
