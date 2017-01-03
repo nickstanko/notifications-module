@@ -13,6 +13,13 @@ class NotificationsModule extends Module
 {
 
     /**
+     * The addon icon.
+     *
+     * @var string
+     */
+    protected $icon = 'fa fa-bell-o';
+
+    /**
      * The module sections.
      *
      * @var array
