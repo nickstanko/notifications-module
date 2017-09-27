@@ -151,10 +151,10 @@ class SubscriptionsController extends AdminController
         $channel      = app(ConfigurationFormBuilder::class);
         $notification = app(ConfigurationFormBuilder::class);
 
-        $subscription->setEntry($this->route->getParameter('id'));
+        $subscription->setEntry($this->route->parameter('id'));
 
         /* @var SubscriptionInterface $entry */
-        $entry = $subscriptions->find($this->route->getParameter('id'));
+        $entry = $subscriptions->find($this->route->parameter('id'));
 
         $channel
             ->setEntry($entry->getChannel()->getNamespace())
